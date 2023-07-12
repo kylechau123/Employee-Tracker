@@ -38,7 +38,7 @@ function mainMenu(){
         }if(answers.action == "Add a role"){
             addRole()
         }if(answers.action == "Add an employee"){
-    
+            addEmployee()
         }if(answers.action == "Update an employee role"){
             updateRole()
         }
@@ -84,7 +84,7 @@ function addDepartment(){
             console.log("Department added!")
             setTimeout(() => {
                 mainMenu()
-            }, 5000)
+            }, 1000)
         });
     });
 };
@@ -95,45 +95,69 @@ function addRole(){
             type: "input",
             name: "roleName",
             message: "What is the name of the new role?"
+        },
+        {
+            type: "input",
+            name: "departmentID",
+            message: "What is the name of the department ID that you would like to add this role to?"
+        },
+        {
+            type: "input",
+            name: "salary",
+            message: "What is the salary of the new role?"
         }
     ]).then(answers => {
-        db.query("Insert into role(title) values (?)", [answers.roleName], (err, res) => {
+        db.query("Insert into role(title, department_id, salary) values (?, ?, ?)", [answers.roleName, answers.departmentID, answers.salary], (err, res) => {
             console.log("Role added!")
             setTimeout(() => {
                 mainMenu()
-            }, 5000)
+            }, 1000)
         });
     });
 };
 
-// function addEmployee(){
-//     inquirer.prompt([
-//         {
-//             type: "input",
-//             name: "firstName",
-//             message: "What is the first name of the new employee?"
-//         },
-//         {
-//             type: "input",
-//             name: "lastName",
-//             message: "What is the last name of the new employee?"
-//         }
-//     ]).then(answers => {
-//         db.query("Insert into first_name(name) values (?)", [answers.firstName, answers.lastName], (err, res) => {
-//             console.log("Employee added!")
-//             setTimeout(() => {
-//                 mainMenu()
-//             }, 5000)
-//         });
-//     });
-// };
+function addEmployee(){
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "firstName",
+            message: "What is the first name of the new employee?"
+        },
+        {
+            type: "input",
+            name: "lastName",
+            message: "What is the last name of the new employee?"
+        },
+        {
+            type: "input",
+            name: "roleID",
+            message: "What is the assigned role of the new employee?"
+        },
+        {
+            type: "input",
+            name: "managerID",
+            message: "Which manager will be assigned to the new employee?"
+        }
+    ]).then(answers => {
+        if(answers.managerID == ''){
+            answers.managerID = null
+        }
+        db.query("Insert into employee(first_name, last_name, role_id, manager_id) values (?, ?, ?, ?)", [answers.firstName, answers.lastName, answers.roleID, answers.managerID], (err, res) => {
+            if(err) console.log(err)
+            console.log("Employee added!")
+            setTimeout(() => {
+                mainMenu()
+            }, 1000)
+        });
+    });
+};
 
 function updateRole(){
     inquirer.prompt([
         {
             type: "input",
             name: "employeeID",
-            message: "Which employee would you like to update?"
+            message: "Which employee ID would you like to update?"
         },
         {
             type: "input",
@@ -145,10 +169,9 @@ function updateRole(){
             console.log("Employee updated!")
             setTimeout(() => {
                 mainMenu()
-            }, 5000)
+            }, 1000)
         });
     });
-    //update employee set role_id="(?)" where id = (?)
 };
 
 mainMenu()
